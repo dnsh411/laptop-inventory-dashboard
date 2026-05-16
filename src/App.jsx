@@ -714,6 +714,7 @@ const App = () => {
 
       {showQRScanner && (
         <QRScannerModal 
+          isOpen={showQRScanner}
           onClose={() => setShowQRScanner(false)}
           onRegister={(data) => handleRegisterFromQr(data)}
         />
