@@ -103,6 +103,11 @@ const App = () => {
       assigned_to: newLaptop.assigned_to || '—',
     };
     
+    // Convert empty strings to null for date/numeric fields to prevent Postgres type errors
+    if (!laptopToSave.purchase_date) laptopToSave.purchase_date = null;
+    if (!laptopToSave.warranty_expiry) laptopToSave.warranty_expiry = null;
+    if (laptopToSave.price === '') laptopToSave.price = null;
+    
     delete laptopToSave.isNew;
     delete laptopToSave.isUpdated;
 
