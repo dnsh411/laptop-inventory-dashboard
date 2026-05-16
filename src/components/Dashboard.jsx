@@ -5,11 +5,9 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from
 const COLORS = ['#6366f1', '#22d3ee', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#f97316'];
 
 const DashboardCard = ({ title, children }) => (
-  <div className="bg-surface-950 border border-white/[0.06] rounded-2xl p-5 shadow-lg flex flex-col items-center">
+  <div className="bg-surface-950 border border-white/[0.06] rounded-2xl p-5 shadow-lg flex flex-col w-full">
     <h3 className="text-sm font-bold text-surface-200 mb-4 w-full text-left">{title}</h3>
-    <div className="w-full h-64">
-      {children}
-    </div>
+    {children}
   </div>
 );
 
@@ -195,29 +193,65 @@ const Dashboard = () => {
     const total = data.reduce((acc, item) => acc + item.value, 0);
     return (
       <DashboardCard title={title}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              innerRadius={60}
-              outerRadius={90}
-              paddingAngle={5}
-              dataKey="value"
-              labelLine={false}
-              label={CustomLabel}
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-              <Label content={<CenterTotal total={total} />} position="center" />
-            </Pie>
-            <Tooltip
-              contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px' }}
-              itemStyle={{ color: '#fff' }}
-            />
-            <Legend verticalAlign="bottom" height={36} iconType="circle" />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className="w-full h-64 mb-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                innerRadius={60}
+                outerRadius={90}
+                paddingAngle={5}
+                dataKey="value"
+                labelLine={false}
+                label={CustomLabel}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+                <Label content={<CenterTotal total={total} />} position="center" />
+              </Pie>
+              <Tooltip
+                contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px' }}
+                itemStyle={{ color: '#fff' }}
+              />
+              <Legend verticalAlign="bottom" height={36} iconType="circle" />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Divider line */}
+        <div className="w-full h-px bg-white/[0.06] my-4"></div>
+
+        {/* Breakdown List */}
+        <div className="w-full flex flex-col">
+          {data.map((item, index) => {
+            const percentage = total > 0 ? ((item.value / total) * 100).toFixed(1) : 0;
+            const color = COLORS[index % COLORS.length];
+            return (
+              <div key={item.name} className="flex flex-col gap-2 py-2">
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: color }}></span>
+                    <span className="text-surface-200 font-medium">{item.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white font-bold">{item.value}</span>
+                    <span className="text-surface-200/50 w-12 text-right text-xs">{percentage}%</span>
+                  </div>
+                </div>
+                {/* Progress bar */}
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${percentage}%`, backgroundColor: color }}></div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Total at bottom */}
+        <div className="w-full text-center mt-5 pt-3 border-t border-white/[0.06]">
+          <span className="text-xs font-semibold text-surface-200/50 uppercase tracking-wider">Total: {total} laptops</span>
+        </div>
       </DashboardCard>
     );
   };
