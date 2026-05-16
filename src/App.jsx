@@ -455,12 +455,10 @@ const App = () => {
                 </button>
                 
                 <button 
-                  id="btn-qr-scanner" 
-                  onClick={() => setShowQRScanner(true)} 
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl border border-white/20 transition-all duration-200"
+                  onClick={() => setShowQRScanner(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/20 text-white hover:bg-white/10 transition text-sm font-medium"
                 >
-                  <Icon d={icons.qr} className="w-4 h-4 text-brand-400" />
-                  QR Scanner
+                  📷 QR Scanner
                 </button>
 
                 <button 
@@ -490,7 +488,7 @@ const App = () => {
                     <h3 className="text-sm font-bold text-red-400">Deleted Laptops</h3>
                     <p className="text-xs text-surface-200/40 mt-0.5">Items here will be permanently removed if deleted again.</p>
                   </div>
-                  <div className="relative w-full max-w-sm">
+                  <div className="relative w-full max-sm">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-200/30">
                       <Icon d={icons.search} className="w-4 h-4" />
                     </span>
