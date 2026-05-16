@@ -104,7 +104,7 @@ const BrandDetailModal = ({ brand, laptops, onClose }) => {
     { title: "RAM Config", field: 'ram' },
     { title: "Storage Space", field: 'storage' },
     { title: "Processors", field: 'processor' },
-    { title: "Graphics", field: 'graphics_card' },
+    { title: "Graphics", field: 'graphics' },
     { title: "Color Ways", field: 'color' },
   ];
 

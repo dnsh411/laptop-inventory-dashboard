@@ -130,7 +130,7 @@ const App = () => {
         processor: formData.processor || null,
         ram: formData.ram || null,
         storage: formData.storage || null,
-        graphics_card: formData.graphics_card || formData.graphics || null,
+        graphics: formData.graphics || formData.graphics_card || null,
         screen_size: formData.screen_size || null,
         status: formData.defective ? 'Defective' : (formData.status || 'Available'),
         assigned_to: formData.assigned_to || null,
@@ -326,7 +326,7 @@ const App = () => {
     addDistributionSection("RAM DISTRIBUTION", "RAM", "ram");
     addDistributionSection("STORAGE DISTRIBUTION", "Storage", "storage");
     addDistributionSection("PROCESSOR DISTRIBUTION", "Processor", "processor");
-    addDistributionSection("GRAPHICS CARD DISTRIBUTION", "Graphics Card", "graphics_card");
+    addDistributionSection("GRAPHICS CARD DISTRIBUTION", "Graphics Card", "graphics");
     addDistributionSection("COLOR DISTRIBUTION", "Color", "color");
 
     // SECTION 9: FULL LAPTOP LIST
@@ -335,7 +335,7 @@ const App = () => {
     inventory.forEach(l => {
       const row = [
         l.asset_id, l.brand, l.model, l.processor, l.ram, l.storage,
-        l.graphics_card, l.color, l.screen_size, l.status,
+        l.graphics, l.color, l.screen_size, l.status,
         l.assigned_to, l.department, l.location, l.purchase_date,
         l.warranty_expiry, l.purchase_vendor, l.price,
         (l.is_defective === true || l.status === 'Defective') ? 'Yes' : 'No'
