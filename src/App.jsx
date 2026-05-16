@@ -44,7 +44,7 @@ const App = () => {
       setTrash(trashRes.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
-      showToast('Failed to load data from database', 'error');
+      showToast(error.message ? `Load error: ${error.message}` : 'Failed to load data from database', 'error');
     } finally {
       setLoading(false);
     }
@@ -148,7 +148,7 @@ const App = () => {
       }
     } catch (error) {
       console.error('Error saving laptop:', error);
-      showToast('Failed to save laptop', 'error');
+      showToast(error.message ? `Save error: ${error.message}` : 'Failed to save laptop', 'error');
       throw error; // Rethrow so modal doesn't close
     }
   };
