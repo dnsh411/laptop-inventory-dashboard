@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../supabase';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 
 const COLORS = ['#6366f1', '#22d3ee', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#f97316'];
 
@@ -19,7 +19,7 @@ const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, inde
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  if (percent === 0) return null;
+  if (!percent) return null;
 
   return (
     <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" className="text-[10px] font-bold drop-shadow-md">
@@ -29,7 +29,7 @@ const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, inde
 };
 
 const CenterTotal = ({ viewBox, total }) => {
-  const { cx, cy } = viewBox;
+  const { cx, cy } = viewBox || { cx: 0, cy: 0 };
   return (
     <text x={cx} y={cy} fill="white" textAnchor="middle" dominantBaseline="central">
       <tspan x={cx} dy="-0.5em" className="text-2xl font-bold">{total}</tspan>
@@ -209,7 +209,7 @@ const Dashboard = () => {
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
-              <CustomLabel viewBox={{ cx: '50%', cy: '50%' }} total={total} content={<CenterTotal total={total} />} />
+              <Label content={<CenterTotal total={total} />} position="center" />
             </Pie>
             <Tooltip
               contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px' }}
