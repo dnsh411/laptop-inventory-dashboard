@@ -101,7 +101,7 @@ const AddLaptopModal = ({ isOpen, onClose, onSave, editingLaptop, nextAssetId })
         <div className="flex-1 overflow-y-auto px-7 py-5 space-y-6">
           <SectionHeader icon="tag" title="Basic Information" />
           <div className="grid grid-cols-2 gap-4">
-            <FormInput icon="hash" label="Asset ID" id="f-assetId" value={form.asset_id} readOnly className="w-full pl-10 pr-3 py-2.5 bg-white/[0.02] border border-white/[0.04] rounded-xl text-sm text-surface-200/50 cursor-not-allowed focus:outline-none" />
+            <FormInput icon="hash" label="Asset ID" id="f-assetId" value={form.asset_id} onChange={e=>set('asset_id',e.target.value)} error={errors.asset_id} className="w-full pl-10 pr-3 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-surface-200/25 focus:outline-none input-glow transition-all duration-200" />
             <FormSelect icon="laptop" label="Brand" id="f-brand" options={['Apple','Dell','Lenovo','HP','Asus','Microsoft','Acer','Samsung']} value={form.brand} onChange={e=>set('brand',e.target.value)} error={errors.brand} />
             <FormInput icon="monitor" label="Model" id="f-model" placeholder='e.g. MacBook Pro 16 inch' value={form.model} onChange={e=>set('model',e.target.value)} error={errors.model} />
             <FormInput icon="color" label="Color" id="f-color" placeholder="e.g. Space Gray" value={form.color} onChange={e=>set('color',e.target.value)} />

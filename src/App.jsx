@@ -61,26 +61,21 @@ const App = () => {
 
   const generateNextAssetId = async () => {
     try {
-      const [laptopsRes, trashRes] = await Promise.all([
-        supabase.from('laptops').select('asset_id'),
-        supabase.from('trash_laptops').select('asset_id')
-      ]);
+      const { data } = await supabase
+        .from('laptops')
+        .select('asset_id')
+        .order('created_at', { ascending: false })
+        .limit(1);
       
-      const allAssetIds = [
-        ...(laptopsRes.data || []).map(l => l.asset_id),
-        ...(trashRes.data || []).map(t => t.asset_id)
-      ];
-
-      let maxId = 0;
-      allAssetIds.forEach(id => {
-        if (!id) return;
-        const match = id.match(/^LAP-(\d+)$/);
+      if (data && data.length > 0) {
+        const lastId = data[0].asset_id;
+        const match = lastId.match(/^LAP-(\d+)$/);
         if (match) {
-          const num = parseInt(match[1], 10);
-          if (num > maxId) maxId = num;
+          const num = parseInt(match[1], 10) + 1;
+          return `LAP-${String(num).padStart(3, '0')}`;
         }
-      });
-      return `LAP-${String(maxId + 1).padStart(3, '0')}`;
+      }
+      return 'LAP-001';
     } catch (error) {
       console.error('Error generating asset ID:', error);
       return `LAP-${Math.floor(Math.random() * 10000)}`;
@@ -98,35 +93,20 @@ const App = () => {
   const handleRegisterFromQr = async (data) => {
     try {
       setLoading(true);
-      // Check if asset_id exists
-      const { data: existing, error: checkError } = await supabase
-        .from('laptops')
-        .select('id')
-        .eq('asset_id', data.asset_id)
-        .single();
+      // Map scanned data correctly to columns
+      const scannedData = {
+        asset_id: data.asset_id || data.AssetID,
+        brand: data.brand || data.Brand,
+        model: data.model || data.Model,
+        status: data.status || data.Status,
+        processor: data.processor || data.Processor,
+        ram: data.ram || data.RAM,
+        storage: data.storage || data.Storage,
+        location: data.location || data.Location,
+        // ... add more mappings if needed
+      };
 
-      if (existing) {
-        setToast({
-          show: true,
-          message: `Laptop ${data.asset_id} is already registered.`,
-          type: 'warning',
-          action: {
-            label: 'Update Info',
-            onClick: () => handleSaveLaptop(data, true) // Pass true to force update
-          }
-        });
-        return;
-      }
-
-      // New registration
-      const { error: insertError } = await supabase
-        .from('laptops')
-        .insert([{ ...data, created_at: new Date() }]);
-
-      if (insertError) throw insertError;
-
-      showToast(`Successfully registered ${data.brand} ${data.model}`, 'success');
-      fetchData();
+      await handleSaveLaptop(scannedData);
     } catch (error) {
       console.error('Error registering from QR:', error);
       showToast(error.message, 'error');
@@ -135,68 +115,63 @@ const App = () => {
     }
   };
 
-  const handleSaveLaptop = async (newLaptop, forceUpdate = false) => {
-    if (!newLaptop) return;
-    const status = newLaptop.defective ? 'Defective' : (newLaptop.status || 'Available');
+  const handleSaveLaptop = async (formData, forceUpdate = false) => {
+    if (!formData) return;
+    setLoading(true);
     
-    // Clean up fields specific to frontend logic before sending to supabase
-    const laptopToSave = {
-      ...newLaptop,
-      brand: newLaptop.brand || 'Unknown',
-      model: newLaptop.model || 'Unknown',
-      status,
-      assigned_to: newLaptop.assigned_to || '—',
-    };
-    
-    // Convert empty strings to null for date/numeric fields to prevent Postgres type errors
-    if (!laptopToSave.purchase_date) laptopToSave.purchase_date = null;
-    if (!laptopToSave.warranty_expiry) laptopToSave.warranty_expiry = null;
-    if (laptopToSave.price === '') laptopToSave.price = null;
-    
-    delete laptopToSave.isNew;
-    delete laptopToSave.isUpdated;
-
     try {
+      // PROBLEM 2 - Safety check and default values
+      const safeData = {
+        asset_id: formData.asset_id || await generateNextAssetId(),
+        brand: formData.brand || 'Unknown',
+        model: formData.model || 'Unknown',
+        color: formData.color || null,
+        quantity: formData.quantity || 1,
+        processor: formData.processor || null,
+        ram: formData.ram || null,
+        storage: formData.storage || null,
+        graphics_card: formData.graphics_card || formData.graphics || null,
+        screen_size: formData.screen_size || null,
+        status: formData.defective ? 'Defective' : (formData.status || 'Available'),
+        assigned_to: formData.assigned_to || null,
+        department: formData.department || null,
+        location: formData.location || null,
+        purchase_date: formData.purchase_date || null,
+        warranty_expiry: formData.warranty_expiry || null,
+        purchase_vendor: formData.purchase_vendor || formData.vendor || null,
+        price: formData.price ? parseFloat(String(formData.price).replace(/[^0-9.]/g, '')) : null,
+        is_defective: formData.defective || formData.is_defective || false,
+      };
+
       if (editingLaptop || forceUpdate) {
-        // Update
-        let query = supabase.from('laptops').update(laptopToSave);
-        if (editingLaptop) {
-          query = query.eq('id', editingLaptop.id);
-        } else {
-          query = query.eq('asset_id', laptopToSave.asset_id);
-        }
-        
-        const { data, error } = await query.select().single();
-          
-        if (error) throw error;
-        
-        setInventory(prev => prev.map(item => item.id === data.id ? { ...data, isUpdated: true } : item));
-        showToast('Laptop Updated Successfully', 'success');
-        
-        setTimeout(() => {
-          setInventory(prev => prev.map(item => item.id === data.id ? { ...item, isUpdated: false } : item));
-        }, 1500);
-      } else {
-        // Insert
         const { data, error } = await supabase
           .from('laptops')
-          .insert([laptopToSave])
+          .update(safeData)
+          .eq('id', editingLaptop?.id || formData.id)
           .select()
           .single();
           
         if (error) throw error;
-        
+        setInventory(prev => prev.map(item => item.id === data.id ? { ...data, isUpdated: true } : item));
+        showToast('Laptop Updated Successfully', 'success');
+      } else {
+        const { data, error } = await supabase
+          .from('laptops')
+          .insert([safeData])
+          .select()
+          .single();
+          
+        if (error) throw error;
         setInventory(prev => [{ ...data, isNew: true }, ...prev]);
         showToast('Laptop Added Successfully', 'success');
-        
-        setTimeout(() => {
-          setInventory(prev => prev.map(item => item.id === data.id ? { ...item, isNew: false } : item));
-        }, 1000);
       }
+      fetchData(); // Refresh to ensure sync
     } catch (error) {
       console.error('Error saving laptop:', error);
-      showToast(error.message ? `Save error: ${error.message}` : 'Failed to save laptop', 'error');
-      throw error; // Rethrow so modal doesn't close
+      showToast(error.message || 'Failed to save laptop', 'error');
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
