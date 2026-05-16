@@ -6,6 +6,7 @@ import StatCard from './components/StatCard';
 import StatusBadge from './components/StatusBadge';
 import Toast from './components/Toast';
 import AddLaptopModal from './components/AddLaptopModal';
+import Dashboard from './components/Dashboard';
 
 const App = () => {
   const [activeNav, setActiveNav] = useState("inventory");
@@ -301,7 +302,9 @@ const App = () => {
         </header>
 
         <div className="p-8">
-          {activeNav === 'trash' ? (
+          {activeNav === 'dashboard' ? (
+            <Dashboard />
+          ) : activeNav === 'trash' ? (
             <React.Fragment>
               <div className="animate-fade-in bg-surface-900/60 backdrop-blur-sm border border-red-500/10 rounded-2xl p-5 mb-6 shadow-[0_0_30px_rgba(239,68,68,0.03)]">
                 <div className="flex items-center gap-4">
