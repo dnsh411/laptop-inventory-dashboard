@@ -5,8 +5,6 @@ const Sidebar = ({ activeNav, setActiveNav }) => {
   const navItems = [
     { key: "dashboard", label: "Dashboard",  icon: icons.dashboard },
     { key: "inventory", label: "Inventory",   icon: icons.inventory },
-    { key: "users",     label: "Users",       icon: icons.users },
-    { key: "reports",   label: "Reports",     icon: icons.reports },
     { key: "trash",     label: "Trash",       icon: icons.trash },
     { key: "settings",  label: "Settings",    icon: icons.settings },
   ];
