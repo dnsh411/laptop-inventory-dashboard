@@ -138,9 +138,13 @@ const App = () => {
         location: formData.location || null,
         purchase_date: formData.purchase_date || null,
         warranty_expiry: formData.warranty_expiry || null,
-        purchase_vendor: formData.purchase_vendor || formData.vendor || null,
+        vendor: formData.vendor || formData.purchase_vendor || null,
         price: formData.price ? parseFloat(String(formData.price).replace(/[^0-9.]/g, '')) : null,
-        is_defective: formData.defective || formData.is_defective || false,
+        defective: formData.defective || formData.is_defective || false,
+        defect_type: formData.defect_type || null,
+        defect_desc: formData.defect_desc || null,
+        severity: formData.severity || null,
+        repair_status: formData.repair_status || null,
       };
 
       if (editingLaptop || forceUpdate) {
@@ -272,15 +276,15 @@ const App = () => {
     const assigned = inventory.filter(l => l.status === 'Assigned').length;
     const maintenance = inventory.filter(l => l.status === 'Maintenance').length;
     const retired = inventory.filter(l => l.status === 'Retired').length;
-    const defective = inventory.filter(l => l.is_defective === true || l.status === 'Defective').length;
-    const nonDefective = total - defective;
+    const defectiveCount = inventory.filter(l => l.defective === true || l.status === 'Defective').length;
+    const nonDefective = total - defectiveCount;
 
     sections.push(`Total Laptops,${total}`);
     sections.push(`Available,${available}`);
     sections.push(`Assigned,${assigned}`);
     sections.push(`Under Maintenance,${maintenance}`);
     sections.push(`Retired,${retired}`);
-    sections.push(`Defective,${defective}`);
+    sections.push(`Defective,${defectiveCount}`);
     sections.push(`Non-Defective,${nonDefective}`);
     sections.push("");
 
@@ -296,7 +300,7 @@ const App = () => {
       if (l.status === 'Assigned') brands[b].assigned++;
       if (l.status === 'Maintenance') brands[b].maintenance++;
       if (l.status === 'Retired') brands[b].retired++;
-      if (l.is_defective === true || l.status === 'Defective') brands[b].defective++;
+      if (l.defective === true || l.status === 'Defective') brands[b].defective++;
     });
     Object.keys(brands).sort().forEach(b => {
       const data = brands[b];
@@ -337,8 +341,8 @@ const App = () => {
         l.asset_id, l.brand, l.model, l.processor, l.ram, l.storage,
         l.graphics, l.color, l.screen_size, l.status,
         l.assigned_to, l.department, l.location, l.purchase_date,
-        l.warranty_expiry, l.purchase_vendor, l.price,
-        (l.is_defective === true || l.status === 'Defective') ? 'Yes' : 'No'
+        l.warranty_expiry, l.vendor, l.price,
+        (l.defective === true || l.status === 'Defective') ? 'Yes' : 'No'
       ].map(escapeCSV).join(",");
       sections.push(row);
     });

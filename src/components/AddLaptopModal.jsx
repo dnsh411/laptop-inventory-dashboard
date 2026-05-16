@@ -152,9 +152,9 @@ const AddLaptopModal = ({ isOpen, onClose, onSave, editingLaptop, nextAssetId })
           </div>
           {defective && (
             <div className="grid grid-cols-2 gap-4 p-4 bg-red-500/[0.03] border border-red-500/10 rounded-2xl">
-              <FormSelect icon="alert" label="Defect Type" id="f-defectType" options={['Hardware Failure','Screen Damage','Battery Issue','Keyboard Malfunction','Port Damage','Overheating','Other']} value={form.defect_type} onChange={e=>set('defect_type',e.target.value)} />
-              <FormSelect icon="shield" label="Severity Level" id="f-severity" options={['Low','Medium','High','Critical']} value={form.severity} onChange={e=>set('severity',e.target.value)} />
-              <FormSelect icon="wrench" label="Repair Status" id="f-repairStatus" options={['Pending Review','Under Repair','Repaired','Unrepairable']} value={form.repair_status} onChange={e=>set('repair_status',e.target.value)} />
+              <FormInput icon="alert" label="Defect Type" id="f-defectType" placeholder="e.g. Hardware, Screen, etc." value={form.defect_type} onChange={e=>set('defect_type',e.target.value)} />
+              <FormSelect icon="shield" label="Severity Level" id="f-severity" options={['Low', 'Medium', 'High', 'Critical']} value={form.severity} onChange={e=>set('severity',e.target.value)} />
+              <FormSelect icon="wrench" label="Repair Status" id="f-repairStatus" options={['Pending', 'In Progress', 'Completed', 'Cannot Repair']} value={form.repair_status} onChange={e=>set('repair_status',e.target.value)} />
               <div className="col-span-2">
                 <label htmlFor="f-defectDesc" className="block text-[11px] font-semibold text-surface-200/50 uppercase tracking-wider mb-1.5">Defect Description</label>
                 <textarea id="f-defectDesc" rows={3} placeholder="Describe the defect in detail..." value={form.defect_desc} onChange={e=>set('defect_desc',e.target.value)} className="w-full px-3 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-surface-200/25 focus:outline-none input-glow transition-all duration-200 resize-none"></textarea>

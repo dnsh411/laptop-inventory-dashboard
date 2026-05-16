@@ -257,7 +257,7 @@ const Dashboard = () => {
     
     // 2. Defective
     let defective = 0;
-    laptops.forEach(l => { if (l.is_defective === true || l.status === 'Defective') defective++; });
+    laptops.forEach(l => { if (l.defective === true || l.status === 'Defective') defective++; });
     const defectiveData = [ { name: 'Defective', value: defective }, { name: 'Functional', value: laptops.length - defective } ];
 
     // 3. Incoming
