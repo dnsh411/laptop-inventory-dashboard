@@ -450,15 +450,15 @@ const App = () => {
                   onClick={handleDownloadReport} 
                   className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl border border-white/20 transition-all duration-200"
                 >
-                  <Icon d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" className="w-4 h-4" />
+                  <Icon d={icons.reports} className="w-4 h-4" />
                   Download Report
                 </button>
                 <button 
                   id="btn-qr-scanner" 
                   onClick={() => setShowScanner(true)} 
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl border border-white/20 transition-all duration-200"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl border border-white/20 transition-all duration-200 shadow-lg shadow-brand-500/5 hover:shadow-brand-500/20"
                 >
-                  <Icon d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm12 0h6v6h-6v-6z" className="w-4 h-4" />
+                  <Icon d={icons.qr} className="w-4 h-4 text-brand-400" />
                   ⬡ QR Scanner
                 </button>
                 <button id="btn-add-laptop" onClick={handleOpenAddModal} className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-brand-600/20 hover:shadow-brand-500/30 hover:-translate-y-0.5 active:translate-y-0">
@@ -637,7 +637,7 @@ const App = () => {
                             <td className="px-5 py-3.5">
                               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button onClick={() => { setQrLaptop(item); setShowQrGen(true); }} className="w-7 h-7 rounded-lg flex items-center justify-center text-surface-200/40 hover:text-brand-400 hover:bg-brand-500/10 transition-colors shadow-sm hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]" title="QR Code">
-                                  <Icon d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm12 0h6v6h-6v-6z" className="w-3.5 h-3.5" />
+                                  <Icon d={icons.qr} className="w-3.5 h-3.5" />
                                 </button>
                                 <button onClick={() => { setEditingLaptop(item); setShowModal(true); }} className="w-7 h-7 rounded-lg flex items-center justify-center text-surface-200/40 hover:text-blue-400 hover:bg-blue-500/10 transition-colors shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]" title="Edit">
                                   <Icon d={icons.edit} className="w-3.5 h-3.5" />
