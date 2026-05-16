@@ -454,9 +454,21 @@ const App = () => {
                   Download Report
                 </button>
                 
-                <button 
+                <button
                   onClick={() => setShowQRScanner(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/20 text-white hover:bg-white/10 transition text-sm font-medium"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    background: 'transparent',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
                 >
                   📷 QR Scanner
                 </button>
@@ -488,7 +500,7 @@ const App = () => {
                     <h3 className="text-sm font-bold text-red-400">Deleted Laptops</h3>
                     <p className="text-xs text-surface-200/40 mt-0.5">Items here will be permanently removed if deleted again.</p>
                   </div>
-                  <div className="relative w-full max-sm">
+                  <div className="relative w-full max-w-sm">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-200/30">
                       <Icon d={icons.search} className="w-4 h-4" />
                     </span>
@@ -702,9 +714,8 @@ const App = () => {
 
       {showQRScanner && (
         <QRScannerModal 
-          isOpen={showQRScanner} 
-          onClose={() => setShowQRScanner(false)} 
-          onRegister={handleRegisterFromQr} 
+          onClose={() => setShowQRScanner(false)}
+          onRegister={(data) => handleRegisterFromQr(data)}
         />
       )}
 
