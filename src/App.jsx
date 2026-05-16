@@ -14,7 +14,7 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
-  const [showScanner, setShowScanner] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const [showQrGen, setShowQrGen] = useState(false);
   const [qrLaptop, setQrLaptop] = useState(null);
   
@@ -453,15 +453,21 @@ const App = () => {
                   <Icon d={icons.reports} className="w-4 h-4" />
                   Download Report
                 </button>
+                
                 <button 
                   id="btn-qr-scanner" 
-                  onClick={() => setShowScanner(true)} 
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl border border-white/20 transition-all duration-200 shadow-lg shadow-brand-500/5 hover:shadow-brand-500/20"
+                  onClick={() => setShowQRScanner(true)} 
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl border border-white/20 transition-all duration-200"
                 >
                   <Icon d={icons.qr} className="w-4 h-4 text-brand-400" />
-                  ⬡ QR Scanner
+                  QR Scanner
                 </button>
-                <button id="btn-add-laptop" onClick={handleOpenAddModal} className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-brand-600/20 hover:shadow-brand-500/30 hover:-translate-y-0.5 active:translate-y-0">
+
+                <button 
+                  id="btn-add-laptop" 
+                  onClick={handleOpenAddModal} 
+                  className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-brand-600/20 hover:shadow-brand-500/30 hover:-translate-y-0.5 active:translate-y-0"
+                >
                   <Icon d={icons.plus} className="w-4 h-4" />
                   Add Laptop
                 </button>
@@ -696,10 +702,10 @@ const App = () => {
         />
       )}
 
-      {showScanner && (
+      {showQRScanner && (
         <QRScannerModal 
-          isOpen={showScanner} 
-          onClose={() => setShowScanner(false)} 
+          isOpen={showQRScanner} 
+          onClose={() => setShowQRScanner(false)} 
           onRegister={handleRegisterFromQr} 
         />
       )}
