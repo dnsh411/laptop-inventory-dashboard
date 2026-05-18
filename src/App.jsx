@@ -8,6 +8,7 @@ import Toast from './components/Toast';
 import AddLaptopModal from './components/AddLaptopModal';
 import QRScannerModal, { QRGeneratorModal } from './components/QRScannerModal';
 import Dashboard from './components/Dashboard';
+import DownloadModal from './components/DownloadModal';
 
 const App = () => {
   const [activeNav, setActiveNav] = useState("inventory");
@@ -16,6 +17,7 @@ const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showQrGen, setShowQrGen] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [qrLaptop, setQrLaptop] = useState(null);
   
   // Dynamic Data State
@@ -255,108 +257,7 @@ const App = () => {
   };
 
   const handleDownloadReport = () => {
-    if (!inventory || inventory.length === 0) {
-      showToast('No data available to download', 'error');
-      return;
-    }
-
-    const escapeCSV = (val) => {
-      if (val === null || val === undefined || val === "") return '"N/A"';
-      let s = String(val).replace(/"/g, '""');
-      return `"${s}"`;
-    };
-
-    const sections = [];
-
-    // SECTION 1: SUMMARY STATS
-    sections.push("=== SUMMARY STATS ===");
-    sections.push("Metric,Value");
-    const total = inventory.length;
-    const available = inventory.filter(l => l.status === 'Available').length;
-    const assigned = inventory.filter(l => l.status === 'Assigned').length;
-    const maintenance = inventory.filter(l => l.status === 'Maintenance').length;
-    const retired = inventory.filter(l => l.status === 'Retired').length;
-    const defectiveCount = inventory.filter(l => l.defective === true || l.status === 'Defective').length;
-    const nonDefective = total - defectiveCount;
-
-    sections.push(`Total Laptops,${total}`);
-    sections.push(`Available,${available}`);
-    sections.push(`Assigned,${assigned}`);
-    sections.push(`Under Maintenance,${maintenance}`);
-    sections.push(`Retired,${retired}`);
-    sections.push(`Defective,${defectiveCount}`);
-    sections.push(`Non-Defective,${nonDefective}`);
-    sections.push("");
-
-    // SECTION 2: BRAND DISTRIBUTION
-    sections.push("=== BRAND DISTRIBUTION ===");
-    sections.push("Brand,Total Count,Available,Assigned,Maintenance,Retired,Defective,Percentage%");
-    const brands = {};
-    inventory.forEach(l => {
-      const b = l.brand || 'Unknown';
-      if (!brands[b]) brands[b] = { total: 0, available: 0, assigned: 0, maintenance: 0, retired: 0, defective: 0 };
-      brands[b].total++;
-      if (l.status === 'Available') brands[b].available++;
-      if (l.status === 'Assigned') brands[b].assigned++;
-      if (l.status === 'Maintenance') brands[b].maintenance++;
-      if (l.status === 'Retired') brands[b].retired++;
-      if (l.defective === true || l.status === 'Defective') brands[b].defective++;
-    });
-    Object.keys(brands).sort().forEach(b => {
-      const data = brands[b];
-      const perc = ((data.total / total) * 100).toFixed(1);
-      sections.push(`${escapeCSV(b)},${data.total},${data.available},${data.assigned},${data.maintenance},${data.retired},${data.defective},${perc}%`);
-    });
-    sections.push("");
-
-    // Helper for simple distribution sections
-    const addDistributionSection = (title, header, field) => {
-      sections.push(`=== ${title} ===`);
-      sections.push(`${header},Count,Percentage%`);
-      const counts = {};
-      inventory.forEach(l => {
-        const val = l[field] || 'Unknown';
-        counts[val] = (counts[val] || 0) + 1;
-      });
-      Object.keys(counts).sort((a, b) => counts[b] - counts[a]).forEach(val => {
-        const c = counts[val];
-        const perc = ((c / total) * 100).toFixed(1);
-        sections.push(`${escapeCSV(val)},${c},${perc}%`);
-      });
-      sections.push("");
-    };
-
-    addDistributionSection("MODEL DISTRIBUTION", "Brand,Model", "model"); // Note: simplified to just model for now as requested
-    addDistributionSection("RAM DISTRIBUTION", "RAM", "ram");
-    addDistributionSection("STORAGE DISTRIBUTION", "Storage", "storage");
-    addDistributionSection("PROCESSOR DISTRIBUTION", "Processor", "processor");
-    addDistributionSection("GRAPHICS CARD DISTRIBUTION", "Graphics Card", "graphics");
-    addDistributionSection("COLOR DISTRIBUTION", "Color", "color");
-
-    // SECTION 9: FULL LAPTOP LIST
-    sections.push("=== FULL LAPTOP LIST ===");
-    sections.push("Asset ID,Brand,Model,Processor,RAM,Storage,Graphics Card,Color,Screen Size,Status,Assigned To,Department,Location,Purchase Date,Warranty Expiry,Purchase Vendor,Price,Defective");
-    inventory.forEach(l => {
-      const row = [
-        l.asset_id, l.brand, l.model, l.processor, l.ram, l.storage,
-        l.graphics, l.color, l.screen_size, l.status,
-        l.assigned_to, l.department, l.location, l.purchase_date,
-        l.warranty_expiry, l.vendor, l.price,
-        (l.defective === true || l.status === 'Defective') ? 'Yes' : 'No'
-      ].map(escapeCSV).join(",");
-      sections.push(row);
-    });
-
-    const csvContent = "data:text/csv;charset=utf-8," + sections.join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    const date = new Date().toISOString().split('T')[0];
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Laptop-Analytics-Report-${date}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast('Report Downloaded Successfully', 'success');
+    setShowDownloadModal(true);
   };
 
   const currentData = activeNav === 'trash' ? trash : inventory;
@@ -704,6 +605,15 @@ const App = () => {
           isOpen={showQrGen} 
           onClose={() => { setShowQrGen(false); setQrLaptop(null); }} 
           laptop={qrLaptop} 
+        />
+      )}
+
+      {showDownloadModal && (
+        <DownloadModal
+          isOpen={showDownloadModal}
+          onClose={() => setShowDownloadModal(false)}
+          inventory={inventory}
+          showToast={showToast}
         />
       )}
     </div>
